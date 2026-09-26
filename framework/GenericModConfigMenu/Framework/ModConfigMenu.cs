@@ -16,6 +16,7 @@ namespace GenericModConfigMenu.Framework
     internal class WideTextbox : Textbox
     {
         private readonly int CustomWidth;
+        public override int Height => 60;
 
         public WideTextbox(int width)
         {
@@ -49,7 +50,7 @@ namespace GenericModConfigMenu.Framework
                 (int)this.Position.X,
                 (int)this.Position.Y,
                 this.CustomWidth,
-                48,
+                Height,
                 Color.White);
 
             // Draw the text
@@ -61,9 +62,9 @@ namespace GenericModConfigMenu.Framework
 
             // Draw blinking cursor if selected
             if (DateTime.UtcNow.Millisecond % 1000 >= 500 && this.Selected)
-                b.Draw(Game1.staminaRect, new Rectangle((int)this.Position.X + 16 + (int)textSize.X + 2, (int)this.Position.Y + 8, 4, 32), Game1.textColor);
+                b.Draw(Game1.staminaRect, new Rectangle((int)this.Position.X + 16 + (int)textSize.X + 2, (int)this.Position.Y + 16, 4, 32), Game1.textColor);
 
-            b.DrawString(Game1.smallFont, text, this.Position + new Vector2(16, 12), Game1.textColor);
+            b.DrawString(Game1.smallFont, text, this.Position + new Vector2(16, 16), Game1.textColor);
         }
     }
 
@@ -141,7 +142,7 @@ namespace GenericModConfigMenu.Framework
             // Table width (standard size)
             int tableWidth = 800;
             // Search bar width = full UI width (table + 64px borders on each side)
-            int searchWidth = tableWidth + 128;
+            int searchWidth = tableWidth + 64;
 
             // Create search box (at the top, same width as full UI with margin)
             this.SearchBox = new WideTextbox(searchWidth)
@@ -161,8 +162,9 @@ namespace GenericModConfigMenu.Framework
             this.SearchPlaceholder = new Label
             {
                 String = I18n.List_SearchLabel(),
-                LocalPosition = new Vector2((Game1.uiViewport.Width - searchWidth) / 2 + 20, 20),
-                NonBoldScale = 0.8f,
+                LocalPosition = new Vector2((Game1.uiViewport.Width - searchWidth) / 2 + 20, 32),
+                Font = Game1.smallFont,
+                NonBoldScale = 1f,
                 IdleTextColor = Color.Black * 0.6f,
                 HoverTextColor = Color.Black * 0.6f,
             };
@@ -182,8 +184,8 @@ namespace GenericModConfigMenu.Framework
 
             KeybindsButton = new Button(keybindsTexture)
             {
-                LocalPosition = this.Table.LocalPosition - new Vector2( keybindsTexture.Width / 2 + 32, 0 ),
-                Callback = _ => openKeybindsMenu( this.ScrollRow),
+                LocalPosition = this.Table.LocalPosition - new Vector2(keybindsTexture.Width / 2 + 32, 0),
+                Callback = _ => openKeybindsMenu(this.ScrollRow),
                 ScreenReaderText = I18n.List_Keybinds(),
             };
             this.Ui.AddChild(KeybindsButton);
@@ -253,7 +255,8 @@ namespace GenericModConfigMenu.Framework
         public override void receiveScrollWheelAction(int direction)
         {
             this.Table.Scrollbar.ScrollBy(direction / -this.ScrollSpeed);
-            snapCursorToCurrentSnappedComponent();
+            if (Game1.options.snappyMenus && Game1.options.gamepadControls)
+                snapCursorToCurrentSnappedComponent();
         }
 
         private int scrollCounter = 0;
@@ -377,6 +380,8 @@ namespace GenericModConfigMenu.Framework
 
         public override void snapToDefaultClickableComponent()
         {
+            if (!Game1.options.snappyMenus || !Game1.options.gamepadControls)
+                return;
             currentlySnappedComponent = SearchBox?.GetGamepadMovementRegions().FirstOrDefault();
             snapCursorToCurrentSnappedComponent();
         }

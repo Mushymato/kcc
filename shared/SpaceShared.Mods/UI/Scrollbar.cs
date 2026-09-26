@@ -69,7 +69,7 @@ namespace SpaceShared.UI
             int row = Util.Clamp(0, this.TopRow + amount, this.MaxTopRow);
             if (row != this.TopRow)
             {
-                Game1.playSound("shwip");
+                Game1.playSound("shiny4");
                 this.TopRow = row;
             }
         }

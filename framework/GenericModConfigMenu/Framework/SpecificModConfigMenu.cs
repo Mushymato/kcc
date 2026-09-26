@@ -398,7 +398,8 @@ namespace GenericModConfigMenu.Framework
                                 foreach (string word in name?.Split(' ') ?? [])
                                 {
                                     // respect newline characters
-                                    if (word == "\n") {
+                                    if (word == "\n")
+                                    {
                                         text.AppendLine(nextLine);
                                         nextLine = "";
                                         continue;
@@ -506,7 +507,8 @@ namespace GenericModConfigMenu.Framework
             if (Dropdown.ActiveDropdown == null)
             {
                 this.Table.Scrollbar.ScrollBy(direction / -this.ScrollSpeed);
-                snapCursorToCurrentSnappedComponent();
+                if (Game1.options.snappyMenus && Game1.options.gamepadControls)
+                    snapCursorToCurrentSnappedComponent();
             }
         }
 
@@ -633,6 +635,9 @@ namespace GenericModConfigMenu.Framework
 
         public override void snapToDefaultClickableComponent()
         {
+            if (!Game1.options.snappyMenus || !Game1.options.gamepadControls)
+                return;
+
             if (ActiveKeybindOverlay != null)
                 return;
 
@@ -696,7 +701,7 @@ namespace GenericModConfigMenu.Framework
                 titleLabel.LocalPosition = new Vector2((Game1.uiViewport.Width - titleLabel.Measure().X) / 2, 12 + 32);
                 titleLabel.HoverTextColor = titleLabel.IdleTextColor;
                 this.Ui.AddChild(titleLabel);
-                this.TitleLabelWidth = (int) titleLabel.Measure().X;
+                this.TitleLabelWidth = (int)titleLabel.Measure().X;
             }
 
             // add buttons
